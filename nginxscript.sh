@@ -46,8 +46,8 @@ server {
     #     proxy_set_header X-Forwarded-Port \$server_port;
     # }
     #microsoft.activeuser.online
-    location /server {
-        root /opt/\$domain_name;
+    location / {
+        # root /opt/\$domain_name;
         proxy_pass http://localhost:$nginx_server_port/;
         proxy_buffering off;
         proxy_set_header X-Real-IP \$remote_addr;
