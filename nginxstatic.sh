@@ -6,12 +6,6 @@ get_input() {
     echo "$input"
 }
 
-# Function to log messages with timestamps
-log() {
-    local message=$1
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $message"
-}
-
 # Main Script
 
 # Prompt user for SSH credentials
@@ -21,9 +15,6 @@ domain_name=$(get_input "Enter Domain name")
 ssh_key=$(get_input "Enter path to SSH key (leave blank for password authentication)")
 nginx_server_port=$(get_input "Enter nginx port")
 certbot_email=$(get_input "Enter certbot email")
-static_files_path=$(get_input "Enter the path to serve static files (default: /opt/office365)")
-static_files_path=${static_files_path:-/opt/office365}
-log "Static files path entered: $static_files_path"
 
 
 # Construct SSH command
@@ -46,23 +37,23 @@ cat << 'SERVER_BLOCK' >> "$domain_name"
 server {
     server_name $domain_name;
     #THIS IS TO SET STATIC FILES MANUALLY
-    # location / {
-    #     root /opt/office365;
-    #     index index.html;
-    #     proxy_buffering off;
-    #     proxy_set_header X-Real-IP \$remote_addr;    
-    #     proxy_set_header X-Forwarded-Host \$host;
-    #     proxy_set_header X-Forwarded-Port \$server_port;
-    # }
-    #microsoft.activeuser.online
     location / {
-        root $static_files_path;
-        proxy_pass http://localhost:$nginx_server_port/;
+        root /opt/smartgame;
+        index index.html;
         proxy_buffering off;
-        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Real-IP \$remote_addr;    
         proxy_set_header X-Forwarded-Host \$host;
         proxy_set_header X-Forwarded-Port \$server_port;
     }
+    #microsoft.activeuser.online
+    # location / {
+    #     # root /opt/\$domain_name;
+    #     proxy_pass http://localhost:$nginx_server_port/;
+    #     proxy_buffering off;
+    #     proxy_set_header X-Real-IP \$remote_addr;
+    #     proxy_set_header X-Forwarded-Host \$host;
+    #     proxy_set_header X-Forwarded-Port \$server_port;
+    # }
 
     location /socket.io {
         proxy_pass http://localhost:$nginx_server_port;  # Adjust this to your actual socket.io server
